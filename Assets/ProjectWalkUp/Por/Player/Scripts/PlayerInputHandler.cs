@@ -8,9 +8,10 @@ public class PlayerInputHandler : MonoBehaviour
     public Vector2 moveInput { get; private set; }
     public Vector2 lookInput { get; private set; }
     public bool jumpTriggered { get; private set; }
+    public bool interactTriggered { get; private set; }
     public float sprintValue { get; private set; }
 
-    public static PlayerInputHandler instance { get; private set; }
+    public static PlayerInputHandler Instance { get; private set; }
 
     [Header ("Input Action Asset")]
     [SerializeField]
@@ -33,6 +34,9 @@ public class PlayerInputHandler : MonoBehaviour
     [SerializeField]
     private string sprint = "Sprint";
 
+    [SerializeField]
+    private string interact = "Interact";
+
     [Header ("Deadzone Values")]
     [SerializeField]
     private float leftStickDZValue;
@@ -41,12 +45,13 @@ public class PlayerInputHandler : MonoBehaviour
     private InputAction lookAct;
     private InputAction jumpAct;
     private InputAction sprintAct;
+    private InputAction interactAct;
 
     private void Awake()
     {
-        if (instance == null)
+        if (Instance == null)
         {
-            instance = this;
+            Instance = this;
             DontDestroyOnLoad(gameObject);
         }
         else
@@ -58,6 +63,7 @@ public class PlayerInputHandler : MonoBehaviour
         lookAct = playerControls.FindActionMap(actionMapName).FindAction(look);
         jumpAct = playerControls.FindActionMap(actionMapName).FindAction(jump);
         sprintAct = playerControls.FindActionMap(actionMapName).FindAction(sprint);
+        interactAct = playerControls.FindActionMap(actionMapName).FindAction(interact);
 
         RegisterInputActions();
 
@@ -77,6 +83,9 @@ public class PlayerInputHandler : MonoBehaviour
 
         sprintAct.performed += context => sprintValue = context.ReadValue<float>();
         sprintAct.canceled += context => sprintValue = 0f;
+
+        interactAct.performed += context => interactTriggered = true;
+        interactAct.canceled += context => interactTriggered = false;
     }
 
     private void OnEnable()
@@ -85,6 +94,9 @@ public class PlayerInputHandler : MonoBehaviour
         lookAct.Enable();
         jumpAct.Enable();
         sprintAct.Enable();
+        interactAct.Enable();
+
+        InputSystem.onDeviceChange += OnDeviceChange;
     }
 
     private void OnDisable()
@@ -93,5 +105,20 @@ public class PlayerInputHandler : MonoBehaviour
         lookAct.Disable();
         jumpAct.Disable();
         sprintAct.Disable();
+        interactAct.Disable();
+
+        InputSystem.onDeviceChange -= OnDeviceChange;
+    }
+
+    private void OnDeviceChange(InputDevice device, InputDeviceChange change)
+    {
+        switch (change)
+        {
+            case InputDeviceChange.Disconnected: Debug.Log("Device Disconneted" + device.name);
+                                                 break;
+
+            case InputDeviceChange.Reconnected: Debug.Log("Device Connected" + device.name);
+                                                break;
+        }
     }
 }
