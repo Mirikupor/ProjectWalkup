@@ -1,14 +1,15 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
 
 public abstract class Interactable : MonoBehaviour
 {
+    public bool onEvents;
+
     public string propmtMessage;
 
     public void BaseInteract()
     {
+        if (onEvents) GetComponent<InteractionEvent>().onInteract.Invoke();
+        
         Interact();
     }
 
