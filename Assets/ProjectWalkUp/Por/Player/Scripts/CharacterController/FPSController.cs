@@ -11,7 +11,16 @@ public class FPSController : MonoBehaviour
 
     [Header("Camera Settings")]
     [SerializeField]
+    private GameObject cinemacineTarget;
+
+    [SerializeField]
     private bool invertYAxis = false;
+
+    [SerializeField]
+    private float topClamp = 89f;
+
+    [SerializeField]
+    private float buttonClamp = -89f;
 
     [Header ("Jump Settings")]
     [SerializeField]
@@ -41,7 +50,9 @@ public class FPSController : MonoBehaviour
 
     private Vector3 currentMovement;
 
-    private float verticalRot;
+    private float cinemacineTargetPitch;
+    private float rotVelocity;
+    private float moveCam = 0.01f;
 
     private void Awake()
     {
@@ -58,12 +69,16 @@ public class FPSController : MonoBehaviour
     private void Update()
     {
         HandleMovement();
-        HandleRotation();
         HandleJumping();
         HandleInteract();
     }
 
-    void HandleMovement()
+    private void LateUpdate()
+    {
+        HandleRotation();
+    }
+
+    private void HandleMovement()
     {
         //Walk and Sprint
         float speed = walkSpeed * (inputHandler.sprintValue > 0 ? sprintMulti : 1f);
@@ -78,7 +93,7 @@ public class FPSController : MonoBehaviour
         charController.Move(currentMovement * Time.deltaTime);
     }
 
-    void HandleJumping()
+    private void HandleJumping()
     {
         if (charController.isGrounded) 
             { currentMovement.y = -0.5f; if (inputHandler.jumpTriggered) { currentMovement.y = jumpForce; } }
@@ -86,20 +101,27 @@ public class FPSController : MonoBehaviour
             currentMovement.y -=  gravity * Time.deltaTime;
     }
 
-    void HandleRotation()
+    private void HandleRotation()
     {
-        float mouseYInput = invertYAxis ? -inputHandler.lookInput.y : inputHandler.lookInput.y;
+        // If there is an input
+        if (inputHandler.lookInput.sqrMagnitude >= moveCam)
+        {
+            float deltaTimeMultiplier = 1f;
+            float mouseYInput = invertYAxis ? -inputHandler.lookInput.y : inputHandler.lookInput.y;
 
-        float mouseXRot = inputHandler.lookInput.x * mouseSen;
-        transform.Rotate(0, mouseXRot, 0);
-        
-        verticalRot -= mouseYInput * mouseSen;
-        verticalRot = Mathf.Clamp(verticalRot, -upDownRange, upDownRange);
+            cinemacineTargetPitch -= mouseYInput * mouseSen * deltaTimeMultiplier;
+            rotVelocity = inputHandler.lookInput.x * mouseSen * deltaTimeMultiplier;
 
-        mainCamera.transform.localRotation = Quaternion.Euler(verticalRot, 0, 0);
+            cinemacineTargetPitch = Mathf.Clamp(cinemacineTargetPitch, buttonClamp, topClamp);
+
+            cinemacineTarget.transform.localRotation = Quaternion.Euler(cinemacineTargetPitch, 0.0f, 0.0f);
+
+            // Rotate the player left and right
+            transform.Rotate(Vector3.up * rotVelocity);
+        }
     }
 
-    void HandleInteract()
+    private void HandleInteract()
     {
         playerUI.UpdateText(string.Empty);
 
