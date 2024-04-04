@@ -1,4 +1,6 @@
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class FPSController : MonoBehaviour
 {
@@ -96,7 +98,7 @@ public class FPSController : MonoBehaviour
     private void HandleJumping()
     {
         if (charController.isGrounded) 
-            { currentMovement.y = -0.5f; if (inputHandler.jumpTriggered) { currentMovement.y = jumpForce; } }
+            { currentMovement.y = -0.5f; if (inputHandler.jumpAct.WasPressedThisFrame()) { currentMovement.y = jumpForce; } }
         else
             currentMovement.y -=  gravity * Time.deltaTime;
     }
@@ -130,7 +132,7 @@ public class FPSController : MonoBehaviour
         Debug.DrawRay(ray.origin, ray.direction * interactDist);
 
         RaycastHit hitInfo;
-
+        
         if (Physics.Raycast(ray, out hitInfo, interactDist, layMask))
         {
             if (hitInfo.collider.GetComponent<Interactable>() != null)
@@ -138,7 +140,7 @@ public class FPSController : MonoBehaviour
                 Interactable interactable = hitInfo.collider.gameObject.GetComponent<Interactable>();
                 playerUI.UpdateText(interactable.propmtMessage);
 
-                if (inputHandler.interactTriggered)
+                if (inputHandler.interactAct.WasPressedThisFrame())
                 {
                     interactable.BaseInteract();
                 }

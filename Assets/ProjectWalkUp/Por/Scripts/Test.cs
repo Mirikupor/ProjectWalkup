@@ -1,25 +1,59 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
+using Cinemachine;
 using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.UI;
+using UnityEngine.Events;
 
 public class Test : MonoBehaviour
 {
-    //List<RaycastResult> results = new List<RaycastResult>();
+    [SerializeField]
+    private CinemachineVirtualCamera playerCam;
+
+    [SerializeField]
+    private UnityEvent eventPlayerCam;
+
+    [SerializeField]
+    public CinemachineVirtualCamera[] cameras;
+
+    private CinemachineVirtualCamera currentCam;
+    private PlayerInputHandler inputHandler;
+
+    private void Start()
+    {
+        inputHandler = PlayerInputHandler.Instance;
+    }
 
     private void Update()
     {
-        /*if (Input.GetMouseButtonDown(0))
+        HandleSwitchMainCharacter();
+    }
+
+    public void SwitchCamera(CinemachineVirtualCamera cam)
+    {
+        currentCam = cam;
+        ChangeCameraPriority();
+    }
+
+    private void HandleSwitchMainCharacter()
+    {
+        if (currentCam == playerCam) return;
+
+        if (inputHandler.interactAct.WasPressedThisFrame())
         {
-            PointerEventData data = new PointerEventData(EventSystem.current);
-            data.position = new Vector2(Screen.width / 2, Screen.height / 2);
-            EventSystem.current.RaycastAll(data, results);
-            foreach (var result in results)
+            currentCam = playerCam;
+            ChangeCameraPriority();
+            eventPlayerCam.Invoke();
+        }
+    }
+
+    private void ChangeCameraPriority()
+    {
+        currentCam.Priority = 20;
+
+        for (int i = 0; i < cameras.Length; i++)
+        {
+            if (cameras[i] != currentCam)
             {
-                ExecuteEvents.ExecuteHierarchy<ISubmitHandler>( result.gameObject, data, ExecuteEvents.submitHandler );
+                cameras[i].Priority = 10;
             }
-        }*/
+        }
     }
 }

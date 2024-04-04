@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -5,8 +6,6 @@ public class PlayerInputHandler : MonoBehaviour
 {
     public Vector2 moveInput { get; private set; }
     public Vector2 lookInput { get; private set; }
-    public bool jumpTriggered { get; private set; }
-    public bool interactTriggered { get; private set; }
     public float sprintValue { get; private set; }
 
     public static PlayerInputHandler Instance { get; private set; }
@@ -39,11 +38,15 @@ public class PlayerInputHandler : MonoBehaviour
     [SerializeField]
     private float leftStickDZValue;
 
+    [NonSerialized]
+    public InputAction jumpAct;
+
+    [NonSerialized]
+    public InputAction interactAct;
+
     private InputAction moveAct;
     private InputAction lookAct;
-    private InputAction jumpAct;
     private InputAction sprintAct;
-    private InputAction interactAct;
 
     private void Awake()
     {
@@ -76,14 +79,8 @@ public class PlayerInputHandler : MonoBehaviour
         lookAct.performed += context => lookInput = context.ReadValue<Vector2>();
         lookAct.canceled += context => lookInput = Vector2.zero;
 
-        jumpAct.performed += context => jumpTriggered = true;
-        jumpAct.canceled += context => jumpTriggered = false;
-
         sprintAct.performed += context => sprintValue = context.ReadValue<float>();
         sprintAct.canceled += context => sprintValue = 0f;
-
-        interactAct.performed += context => interactTriggered = true;
-        interactAct.canceled += context => interactTriggered = false;
     }
 
     private void OnEnable()
