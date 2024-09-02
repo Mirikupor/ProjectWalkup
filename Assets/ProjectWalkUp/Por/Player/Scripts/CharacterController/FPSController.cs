@@ -1,16 +1,9 @@
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+[RequireComponent(typeof(PlayerMovement))]
 public class FPSController : MonoBehaviour
 {
-    [Header ("Movement Speed Settings")]
-    [SerializeField]
-    private float walkSpeed = 5.0f;
-
-    [SerializeField]
-    private float sprintMulti = 2.0f;
-
     [Header("Camera Settings")]
     [SerializeField]
     private GameObject cinemacineTarget;
@@ -22,21 +15,11 @@ public class FPSController : MonoBehaviour
     private float topClamp = 89f;
 
     [SerializeField]
-    private float buttonClamp = -89f;
-
-    [Header ("Jump Settings")]
-    [SerializeField]
-    private float jumpForce = 5.0f;
-
-    [SerializeField]
-    private float gravity = 9.81f;
+    private float buttonClamp = 89f;
 
     [Header ("Look Sensitivity Settings")]
     [SerializeField]
     private float mouseSen = 2.0f;
-
-    [SerializeField]
-    private float upDownRange = 80.0f;
 
     [Header("Interact Settings")]
     [SerializeField]
@@ -45,12 +28,12 @@ public class FPSController : MonoBehaviour
     [SerializeField]
     private LayerMask layMask;
 
-    private CharacterController charController;
+    //Test SOLID
+    private PlayerMovement playerMovement;
+
     private Camera mainCamera;
     private PlayerInputHandler inputHandler;
     private PlayerUI playerUI;
-
-    private Vector3 currentMovement;
 
     private float cinemacineTargetPitch;
     private float rotVelocity;
@@ -58,7 +41,12 @@ public class FPSController : MonoBehaviour
 
     private void Awake()
     {
-        charController = GetComponent<CharacterController>();
+        Initialize();
+    }
+
+    private void Initialize()
+    {
+        playerMovement = GetComponent<PlayerMovement>();
         playerUI = GetComponent<PlayerUI>();
         mainCamera = Camera.main;
     }
@@ -70,37 +58,15 @@ public class FPSController : MonoBehaviour
 
     private void Update()
     {
-        HandleMovement();
-        HandleJumping();
+        playerMovement.HandleMovement(inputHandler);
+        playerMovement.HandleJumping(inputHandler);
+
         HandleInteract();
     }
 
     private void LateUpdate()
     {
         HandleRotation();
-    }
-
-    private void HandleMovement()
-    {
-        //Walk and Sprint
-        float speed = walkSpeed * (inputHandler.sprintValue > 0 ? sprintMulti : 1f);
-
-        Vector3 inputDir = new Vector3 (inputHandler.moveInput.x, 0f, inputHandler.moveInput.y);
-        Vector3 worldDir = transform.TransformDirection(inputDir);
-        worldDir.Normalize();
-
-        currentMovement.x = worldDir.x * speed;
-        currentMovement.z = worldDir.z * speed;
-
-        charController.Move(currentMovement * Time.deltaTime);
-    }
-
-    private void HandleJumping()
-    {
-        if (charController.isGrounded) 
-            { currentMovement.y = -0.5f; if (inputHandler.jumpAct.WasPressedThisFrame()) { currentMovement.y = jumpForce; } }
-        else
-            currentMovement.y -=  gravity * Time.deltaTime;
     }
 
     private void HandleRotation()
@@ -114,7 +80,7 @@ public class FPSController : MonoBehaviour
             cinemacineTargetPitch -= mouseYInput * mouseSen * deltaTimeMultiplier;
             rotVelocity = inputHandler.lookInput.x * mouseSen * deltaTimeMultiplier;
 
-            cinemacineTargetPitch = Mathf.Clamp(cinemacineTargetPitch, buttonClamp, topClamp);
+            cinemacineTargetPitch = Mathf.Clamp(cinemacineTargetPitch, -buttonClamp, topClamp);
 
             cinemacineTarget.transform.localRotation = Quaternion.Euler(cinemacineTargetPitch, 0.0f, 0.0f);
 
@@ -132,7 +98,7 @@ public class FPSController : MonoBehaviour
         Debug.DrawRay(ray.origin, ray.direction * interactDist);
 
         RaycastHit hitInfo;
-        
+
         if (Physics.Raycast(ray, out hitInfo, interactDist, layMask))
         {
             if (hitInfo.collider.GetComponent<Interactable>() != null)

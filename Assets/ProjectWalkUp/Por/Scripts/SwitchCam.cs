@@ -2,7 +2,7 @@ using Cinemachine;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class Test : MonoBehaviour
+public class SwitchCam : MonoBehaviour
 {
     [SerializeField]
     private CinemachineVirtualCamera playerCam;
