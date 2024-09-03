@@ -151,6 +151,8 @@ GameObject:
   - component: {fileID: 2433619442094149672}
   - component: {fileID: 6494275937906616596}
   - component: {fileID: 2047125305858616833}
+  - component: {fileID: 5148682438916886246}
+  - component: {fileID: 5479175453135810379}
   m_Layer: 0
   m_Name: FPSController
   m_TagString: Untagged
@@ -214,15 +216,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebb1fd9695b2277499a8833423c1cb38, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cinemacineTarget: {fileID: 3813194942567459975}
-  invertYAxis: 0
-  topClamp: 84
-  buttonClamp: 89
-  mouseSen: 1
-  interactDist: 3
-  layMask:
-    serializedVersion: 2
-    m_Bits: 64
 --- !u!114 &6494275937906616596
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -252,6 +245,39 @@ MonoBehaviour:
   sprintMulti: 2
   jumpForce: 5
   gravity: 9.81
+--- !u!114 &5148682438916886246
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5063984280113115737}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d3903bcf7d67ac047b3223e824b34852, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cinemacineTarget: {fileID: 3813194942567459975}
+  invertYAxis: 0
+  topClamp: 89
+  buttonClamp: 89
+  mouseSen: 1
+--- !u!114 &5479175453135810379
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5063984280113115737}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d0135fb50b126646b618d1784faa8ee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  interactDist: 3
+  layMask:
+    serializedVersion: 2
+    m_Bits: 64
 --- !u!1 &6282407013831796331
 GameObject:
   m_ObjectHideFlags: 0
