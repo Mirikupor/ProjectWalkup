@@ -261,7 +261,7 @@ MonoBehaviour:
   invertYAxis: 0
   topClamp: 89
   buttonClamp: 89
-  mouseSen: 1
+  mouseSen: 0.2
 --- !u!114 &5479175453135810379
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -274,7 +274,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5d0135fb50b126646b618d1784faa8ee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  interactDist: 3
+  interactDist: 2
   layMask:
     serializedVersion: 2
     m_Bits: 64
